@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
@@ -32,11 +33,17 @@ class PerfilCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF223D72), Color(0xFF162339), Color(0xFF141D2B)],
+          colors: [
+            Color(0xFF223D72),
+            Color(0xFF162339),
+            Color(0xFF141D2B),
+          ],
           stops: [0, 0.55, 1],
         ),
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: AppTheme.azul.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: AppTheme.azul.withValues(alpha: 0.35),
+        ),
         boxShadow: [
           BoxShadow(
             color: AppTheme.azul.withValues(alpha: 0.10),
@@ -56,7 +63,11 @@ class PerfilCard extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Avatar(nome: nome, fotoUrl: fotoUrl, raio: 45),
+                    _Avatar(
+                      nome: nome,
+                      fotoUrl: fotoUrl,
+                      raio: 45,
+                    ),
                     const SizedBox(height: 18),
                     _Identificacao(
                       nome: nome,
@@ -70,7 +81,11 @@ class PerfilCard extends StatelessWidget {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _Avatar(nome: nome, fotoUrl: fotoUrl, raio: 51),
+                  _Avatar(
+                    nome: nome,
+                    fotoUrl: fotoUrl,
+                    raio: 51,
+                  ),
                   const SizedBox(width: 22),
                   Expanded(
                     child: _Identificacao(
@@ -83,9 +98,11 @@ class PerfilCard extends StatelessWidget {
               );
             },
           ),
+
           const SizedBox(height: 22),
           const Divider(color: Color(0x553F6DAC)),
           const SizedBox(height: 12),
+
           Text(
             resumo,
             style: const TextStyle(
@@ -94,19 +111,27 @@ class PerfilCard extends StatelessWidget {
               height: 1.65,
             ),
           ),
+
           const SizedBox(height: 23),
+
           Wrap(
             spacing: 12,
             runSpacing: 12,
             children: [
               FilledButton.icon(
                 onPressed: onVerProjetos,
-                icon: const Icon(Icons.grid_view_rounded, size: 19),
+                icon: const Icon(
+                  Icons.grid_view_rounded,
+                  size: 19,
+                ),
                 label: const Text('Ver meus projetos'),
               ),
               OutlinedButton.icon(
                 onPressed: onCopiarGithub,
-                icon: const Icon(Icons.content_copy_rounded, size: 17),
+                icon: const Icon(
+                  Icons.content_copy_rounded,
+                  size: 17,
+                ),
                 label: const Text('Copiar GitHub'),
               ),
             ],
@@ -117,6 +142,7 @@ class PerfilCard extends StatelessWidget {
   }
 }
 
+/// Avatar com suporte para imagens locais e imagens da internet.
 class _Avatar extends StatelessWidget {
   final String nome;
   final String fotoUrl;
@@ -131,47 +157,79 @@ class _Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final partes = nome.trim().split(RegExp(r'\s+'));
-    final iniciais = partes.isEmpty
-        ? 'DEV'
-        : '${partes.first[0]}${partes.length > 1 ? partes.last[0] : ''}'
-            .toUpperCase();
 
-    Widget avatarPadrao() => Center(
-          child: Text(
-            iniciais,
-            style: TextStyle(
-              fontSize: raio * 0.42,
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
+    final iniciais = partes.isEmpty || partes.first.isEmpty
+        ? 'DEV'
+        : '${partes.first[0]}'
+            '${partes.length > 1 ? partes.last[0] : ''}'
+                .toUpperCase();
+
+    Widget avatarPadrao() {
+      return Center(
+        child: Text(
+          iniciais,
+          style: TextStyle(
+            fontSize: raio * 0.42,
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
           ),
+        ),
+      );
+    }
+
+    Widget imagem() {
+      if (fotoUrl.trim().isEmpty) {
+        return avatarPadrao();
+      }
+
+      final bool imagemLocal =
+          !fotoUrl.startsWith('http://') &&
+          !fotoUrl.startsWith('https://');
+
+      if (imagemLocal) {
+        return Image.asset(
+          fotoUrl,
+          width: raio * 2,
+          height: raio * 2,
+          fit: BoxFit.cover,
+          errorBuilder: (context, erro, stackTrace) {
+            return avatarPadrao();
+          },
         );
+      }
+
+      return Image.network(
+        fotoUrl,
+        width: raio * 2,
+        height: raio * 2,
+        fit: BoxFit.cover,
+        errorBuilder: (context, erro, stackTrace) {
+          return avatarPadrao();
+        },
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppTheme.azulClaro, width: 2),
+        border: Border.all(
+          color: AppTheme.azulClaro,
+          width: 2,
+        ),
       ),
       child: CircleAvatar(
         radius: raio,
         backgroundColor: AppTheme.azul,
         child: ClipOval(
-          child: fotoUrl.trim().isEmpty
-              ? avatarPadrao()
-              : Image.network(
-                  fotoUrl,
-                  width: raio * 2,
-                  height: raio * 2,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, erro, stackTrace) => avatarPadrao(),
-                ),
+          child: imagem(),
         ),
       ),
     );
   }
 }
 
+/// Identificação do desenvolvedor.
 class _Identificacao extends StatelessWidget {
   final String nome;
   final String ocupacao;
@@ -189,11 +247,16 @@ class _Identificacao extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 11,
+            vertical: 6,
+          ),
           decoration: BoxDecoration(
             color: AppTheme.verde.withValues(alpha: 0.13),
             borderRadius: BorderRadius.circular(100),
-            border: Border.all(color: AppTheme.verde.withValues(alpha: 0.38)),
+            border: Border.all(
+              color: AppTheme.verde.withValues(alpha: 0.38),
+            ),
           ),
           child: const Text(
             'DISPONÍVEL PARA OPORTUNIDADES',
@@ -205,17 +268,23 @@ class _Identificacao extends StatelessWidget {
             ),
           ),
         ),
+
         const SizedBox(height: 11),
+
         Text(
           nome,
           style: TextStyle(
-            fontSize: MediaQuery.sizeOf(context).width < 400 ? 25 : 30,
+            fontSize: MediaQuery.sizeOf(context).width < 400
+                ? 25
+                : 30,
             fontWeight: FontWeight.w800,
             height: 1.12,
             color: AppTheme.texto,
           ),
         ),
+
         const SizedBox(height: 5),
+
         Text(
           ocupacao,
           style: const TextStyle(
@@ -224,7 +293,9 @@ class _Identificacao extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
+
         const SizedBox(height: 9),
+
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -234,12 +305,14 @@ class _Identificacao extends StatelessWidget {
               color: AppTheme.textoSecundario,
             ),
             const SizedBox(width: 4),
-            Text(
-              localizacao,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppTheme.textoSecundario,
-                fontSize: 12,
+            Flexible(
+              child: Text(
+                localizacao,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppTheme.textoSecundario,
+                  fontSize: 12,
+                ),
               ),
             ),
           ],

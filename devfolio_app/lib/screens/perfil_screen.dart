@@ -38,7 +38,7 @@ class DadosPerfil {
     ocupacao: 'Desenvolvedor de Software em formação',
     localizacao: 'São Paulo · Brasil',
     github: 'https://github.com/EoPsyco22',
-    fotoUrl: 'https://github.com/EoPsyco22.png',
+    fotoUrl: 'assets/images/rafael.png',
     resumo:
         'Estudante de Desenvolvimento de Sistemas, apaixonado por criar '
         'soluções úteis. Tenho experiência acadêmica com Python, Flutter, '
@@ -68,7 +68,7 @@ class DadosPerfil {
     ocupacao: 'Desenvolvedor Full Stack em formação',
     localizacao: 'Mauá · São Paulo',
     github: 'https://github.com/SEU_USUARIO',
-    fotoUrl: 'https://github.com/SEU_USUARIO.png',
+    fotoUrl: 'assets/images/guilherme.png',
     resumo:
         'Estudante de Desenvolvimento de Sistemas, interessado em '
         'tecnologia e inovação. Tenho interesse na criação de '
