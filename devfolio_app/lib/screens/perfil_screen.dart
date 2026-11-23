@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,35 +6,81 @@ import '../theme/app_theme.dart';
 import '../widgets/perfil_card.dart';
 import '../widgets/skill_chip.dart';
 
-/// EDITE AQUI para personalizar seu portfólio.
-/// A URL usa a imagem pública de perfil do GitHub e pode ser substituída.
+/// Dados dos perfis do portfólio.
 class DadosPerfil {
-  DadosPerfil._();
+  final String nome;
+  final String ocupacao;
+  final String localizacao;
+  final String github;
+  final String fotoUrl;
+  final String resumo;
 
-  static const String nome = 'Rafael Pinto';
-  static const String ocupacao = 'Desenvolvedor de Software em formação';
-  static const String localizacao = 'São Paulo · Brasil';
-  static const String github = 'https://github.com/EoPsyco22';
-  static const String fotoUrl = 'https://github.com/EoPsyco22.png';
-  static const String resumo =
-      'Estudante de Desenvolvimento de Sistemas, apaixonado por criar '
-      'soluções úteis. Tenho experiência acadêmica com Python, Flutter, '
-      'desenvolvimento web e APIs. Busco minha primeira oportunidade '
-      'profissional na área de tecnologia.';
+  const DadosPerfil({
+    required this.nome,
+    required this.ocupacao,
+    required this.localizacao,
+    required this.github,
+    required this.fotoUrl,
+    required this.resumo,
+  });
+
+  /// Primeiro perfil: Rafael Pinto.
+  static const rafael = DadosPerfil(
+    nome: 'Rafael Pinto',
+    ocupacao: 'Desenvolvedor de Software em formação',
+    localizacao: 'São Paulo · Brasil',
+    github: 'https://github.com/EoPsyco22',
+    fotoUrl: 'https://github.com/EoPsyco22.png',
+    resumo:
+        'Estudante de Desenvolvimento de Sistemas, apaixonado por criar '
+        'soluções úteis. Tenho experiência acadêmica com Python, Flutter, '
+        'desenvolvimento web e APIs. Busco minha primeira oportunidade '
+        'profissional na área de tecnologia.',
+  );
+
+  /// Segundo perfil: Guilherme Monteiro Lima.
+  static const guilherme = DadosPerfil(
+    nome: 'Guilherme Monteiro Lima',
+    ocupacao: 'Desenvolvedor de Software em formação',
+    localizacao: 'São Paulo · Brasil',
+    github: 'https://github.com/EoPsyco22',
+    fotoUrl: 'https://github.com/EoPsyco22.png',
+    resumo:
+        'Estudante de Desenvolvimento de Sistemas, apaixonado por criar '
+        'soluções úteis. Tenho experiência acadêmica com Python, Flutter, '
+        'desenvolvimento web e APIs. Busco minha primeira oportunidade '
+        'profissional na área de tecnologia.',
+  );
 }
 
-class PerfilScreen extends StatelessWidget {
+class PerfilScreen extends StatefulWidget {
   final VoidCallback onVerProjetos;
 
-  const PerfilScreen({super.key, required this.onVerProjetos});
+  const PerfilScreen({
+    super.key,
+    required this.onVerProjetos,
+  });
 
+  @override
+  State<PerfilScreen> createState() => _PerfilScreenState();
+}
+
+class _PerfilScreenState extends State<PerfilScreen> {
+  DadosPerfil perfilAtual = DadosPerfil.rafael;
+
+  /// Copia o GitHub do perfil selecionado.
   Future<void> _copiarGitHub(BuildContext context) async {
-    await Clipboard.setData(const ClipboardData(text: DadosPerfil.github));
+    await Clipboard.setData(
+      ClipboardData(text: perfilAtual.github),
+    );
+
     if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Link do GitHub copiado para a área de transferência.'),
+        content: Text(
+          'Link do GitHub copiado para a área de transferência.',
+        ),
       ),
     );
   }
@@ -55,24 +102,68 @@ class PerfilScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _CabecalhoPerfil(),
-                  const SizedBox(height: 24),
-                  PerfilCard(
-                    nome: DadosPerfil.nome,
-                    ocupacao: DadosPerfil.ocupacao,
-                    localizacao: DadosPerfil.localizacao,
-                    resumo: DadosPerfil.resumo,
-                    fotoUrl: DadosPerfil.fotoUrl,
-                    onVerProjetos: onVerProjetos,
-                    onCopiarGithub: () => _copiarGitHub(context),
+
+                  const SizedBox(height: 20),
+
+                  // Seleção entre os dois perfis.
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      ChoiceChip(
+                        label: const Text('Rafael Pinto'),
+                        selected:
+                            perfilAtual.nome == 'Rafael Pinto',
+                        onSelected: (_) {
+                          setState(() {
+                            perfilAtual = DadosPerfil.rafael;
+                          });
+                        },
+                      ),
+                      ChoiceChip(
+                        label: const Text('Guilherme Monteiro Lima'),
+                        selected:
+                            perfilAtual.nome ==
+                                'Guilherme Monteiro Lima',
+                        onSelected: (_) {
+                          setState(() {
+                            perfilAtual = DadosPerfil.guilherme;
+                          });
+                        },
+                      ),
+                    ],
                   ),
+
                   const SizedBox(height: 24),
+
+                  // Cartão com os dados do perfil selecionado.
+                  PerfilCard(
+                    nome: perfilAtual.nome,
+                    ocupacao: perfilAtual.ocupacao,
+                    localizacao: perfilAtual.localizacao,
+                    resumo: perfilAtual.resumo,
+                    fotoUrl: perfilAtual.fotoUrl,
+                    onVerProjetos: widget.onVerProjetos,
+                    onCopiarGithub: () =>
+                        _copiarGitHub(context),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Layout adaptativo.
                   if (paginaLarga)
                     const Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(flex: 3, child: _Habilidades()),
+                        Expanded(
+                          flex: 3,
+                          child: _Habilidades(),
+                        ),
                         SizedBox(width: 20),
-                        Expanded(flex: 2, child: _SobreMim()),
+                        Expanded(
+                          flex: 2,
+                          child: _SobreMim(),
+                        ),
                       ],
                     )
                   else
@@ -83,7 +174,9 @@ class PerfilScreen extends StatelessWidget {
                         _SobreMim(),
                       ],
                     ),
+
                   const SizedBox(height: 20),
+
                   const _RodapePerfil(),
                 ],
               ),
@@ -95,6 +188,7 @@ class PerfilScreen extends StatelessWidget {
   }
 }
 
+/// Cabeçalho da apresentação.
 class _CabecalhoPerfil extends StatelessWidget {
   const _CabecalhoPerfil();
 
@@ -113,18 +207,24 @@ class _CabecalhoPerfil extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 9),
-        Text('Olá, seja bem-vindo!',
-            style: Theme.of(context).textTheme.headlineLarge),
+        Text(
+          'Olá, seja bem-vindo!',
+          style: Theme.of(context).textTheme.headlineLarge,
+        ),
         const SizedBox(height: 8),
         const Text(
           'Conheça meu perfil, minha trajetória e as tecnologias que estudo.',
-          style: TextStyle(color: AppTheme.textoSecundario, fontSize: 14),
+          style: TextStyle(
+            color: AppTheme.textoSecundario,
+            fontSize: 14,
+          ),
         ),
       ],
     );
   }
 }
 
+/// Habilidades e tecnologias.
 class _Habilidades extends StatelessWidget {
   const _Habilidades();
 
@@ -149,16 +249,19 @@ class _Habilidades extends StatelessWidget {
         spacing: 9,
         runSpacing: 10,
         children: habilidades
-            .map((habilidade) => SkillChip(
-                  rotulo: habilidade.nome,
-                  icone: habilidade.icone,
-                ))
+            .map(
+              (habilidade) => SkillChip(
+                rotulo: habilidade.nome,
+                icone: habilidade.icone,
+              ),
+            )
             .toList(),
       ),
     );
   }
 }
 
+/// Seção sobre o desenvolvedor.
 class _SobreMim extends StatelessWidget {
   const _SobreMim();
 
@@ -184,12 +287,19 @@ class _SobreMim extends StatelessWidget {
           SizedBox(height: 15),
           Row(
             children: [
-              Icon(Icons.school_outlined, color: AppTheme.verde, size: 19),
+              Icon(
+                Icons.school_outlined,
+                color: AppTheme.verde,
+                size: 19,
+              ),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'Técnico em Desenvolvimento de Sistemas · 2026',
-                  style: TextStyle(color: AppTheme.texto, fontSize: 12),
+                  style: TextStyle(
+                    color: AppTheme.texto,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
@@ -197,12 +307,19 @@ class _SobreMim extends StatelessWidget {
           SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.security_outlined, color: AppTheme.verde, size: 19),
+              Icon(
+                Icons.security_outlined,
+                color: AppTheme.verde,
+                size: 19,
+              ),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'Interesse futuro em cibersegurança',
-                  style: TextStyle(color: AppTheme.texto, fontSize: 12),
+                  style: TextStyle(
+                    color: AppTheme.texto,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
@@ -213,6 +330,7 @@ class _SobreMim extends StatelessWidget {
   }
 }
 
+/// Painel reutilizável.
 class _Painel extends StatelessWidget {
   final String titulo;
   final String subtitulo;
@@ -238,7 +356,11 @@ class _Painel extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icone, color: AppTheme.azulClaro, size: 21),
+                Icon(
+                  icone,
+                  color: AppTheme.azulClaro,
+                  size: 21,
+                ),
                 const SizedBox(width: 9),
                 Expanded(
                   child: Text(
@@ -249,9 +371,13 @@ class _Painel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 5),
-            Text(subtitulo,
-                style: const TextStyle(
-                    color: AppTheme.textoSecundario, fontSize: 12)),
+            Text(
+              subtitulo,
+              style: const TextStyle(
+                color: AppTheme.textoSecundario,
+                fontSize: 12,
+              ),
+            ),
             const SizedBox(height: 19),
             conteudo,
           ],
@@ -261,6 +387,7 @@ class _Painel extends StatelessWidget {
   }
 }
 
+/// Rodapé do portfólio.
 class _RodapePerfil extends StatelessWidget {
   const _RodapePerfil();
 
@@ -272,7 +399,10 @@ class _RodapePerfil extends StatelessWidget {
         child: Text(
           'DevFolio App  ·  Desenvolvido com Flutter & Dart',
           textAlign: TextAlign.center,
-          style: TextStyle(color: AppTheme.textoSecundario, fontSize: 11),
+          style: TextStyle(
+            color: AppTheme.textoSecundario,
+            fontSize: 11,
+          ),
         ),
       ),
     );
